@@ -193,6 +193,10 @@ const Main = () => {
         contentContainerStyle={{ paddingBottom: 80 }}
         showsVerticalScrollIndicator={false}
       >
+        {/* top breadcrumb like in design */}
+        <Text style={styles.screenLabel}>Home</Text>
+
+        {/* header row */}
         <View style={styles.headerRow}>
           <TouchableOpacity style={styles.iconButton}>
             <Text style={styles.iconText}>≡</Text>
@@ -228,17 +232,18 @@ const Main = () => {
           </View>
 
           <TouchableOpacity style={styles.iconButton}>
-            <View>
+            <View style={styles.bellWrap}>
               <Text style={styles.iconText}>🔔</Text>
               <View style={styles.redDot} />
             </View>
           </TouchableOpacity>
         </View>
 
+        {/* hero banner */}
         <ImageBackground
           source={IMG_HOME_BG}
           style={styles.banner}
-          imageStyle={{ borderRadius: 16 }}
+          imageStyle={{ borderRadius: 18 }}
         >
           <View style={styles.bannerLeft}>
             <Text style={styles.bannerTitle}>Find Your Dream Collectible</Text>
@@ -249,22 +254,23 @@ const Main = () => {
               <Text style={styles.viewBtnText}>View Auction</Text>
             </TouchableOpacity>
           </View>
-        </ImageBackground>
 
-        <View style={styles.rowBetween}>
-          <Text style={styles.h1}>Auctions</Text>
+          {/* category pill over the banner (like the screenshot) */}
           <TouchableOpacity
-            style={styles.categoryRow}
+            style={styles.categoryPill}
             onPress={() => setShowCategoryModal(true)}
           >
-            <Text style={styles.categoryRowText}>
-              {activeCategory ?? 'Category'} ▾
-            </Text>
+            <Text style={styles.categoryPillText}>{activeCategory}</Text>
+            <Text style={styles.categoryArrow}>⌄</Text>
           </TouchableOpacity>
-        </View>
+        </ImageBackground>
+
+        {/* auctions header + filters */}
+        <Text style={styles.h1}>Auctions</Text>
 
         <View style={styles.chipsRow}>{FILTER_CHIPS.map(renderChip)}</View>
 
+        {/* list */}
         <View style={styles.listWrap}>
           <FlatList
             data={AUCTIONS}
@@ -276,39 +282,43 @@ const Main = () => {
         </View>
       </ScrollView>
 
+      {/* category dropdown */}
       <Modal visible={showCategoryModal} transparent animationType="fade">
         <Pressable
           style={styles.modalOverlay}
           onPress={() => setShowCategoryModal(false)}
         >
-          <View style={styles.modal}>
-            {CATEGORIES.map(category => (
-              <TouchableOpacity
-                key={category}
-                style={[
-                  styles.modalItem,
-                  category === activeCategory && styles.modalItemActive,
-                ]}
-                onPress={() => {
-                  setActiveCategory(category);
-                  setShowCategoryModal(false);
-                }}
-              >
-                <View style={styles.modalRow}>
-                  <Text
-                    style={[
-                      styles.modalText,
-                      category === activeCategory && styles.modalTextActive,
-                    ]}
-                  >
-                    {category}
-                  </Text>
-                  {category === activeCategory && (
-                    <Text style={styles.modalCheck}>✓</Text>
-                  )}
-                </View>
-              </TouchableOpacity>
-            ))}
+          <View style={styles.dropdownWrapper}>
+            <View style={styles.modalPointer} />
+            <View style={styles.modal}>
+              {CATEGORIES.map(category => (
+                <TouchableOpacity
+                  key={category}
+                  style={[
+                    styles.modalItem,
+                    category === activeCategory && styles.modalItemActive,
+                  ]}
+                  onPress={() => {
+                    setActiveCategory(category);
+                    setShowCategoryModal(false);
+                  }}
+                >
+                  <View style={styles.modalRow}>
+                    <Text
+                      style={[
+                        styles.modalText,
+                        category === activeCategory && styles.modalTextActive,
+                      ]}
+                    >
+                      {category}
+                    </Text>
+                    {category === activeCategory && (
+                      <Text style={styles.modalCheck}>✓</Text>
+                    )}
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
         </Pressable>
       </Modal>
@@ -319,8 +329,15 @@ const Main = () => {
 export default Main;
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#EFEFEF' },
-  container: { paddingHorizontal: 18, paddingTop: 6 },
+  safe: { flex: 1, backgroundColor: '#F4F4F7' },
+  container: { paddingHorizontal: 18, paddingTop: 4 },
+
+  screenLabel: {
+    fontSize: 14,
+    color: '#C2C2C8',
+    marginBottom: 8,
+  },
+
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -328,38 +345,45 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   iconButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 26,
-    backgroundColor: '#fff',
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#F0E9DD',
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: 8,
     elevation: 2,
   },
   iconText: { fontSize: 20 },
-  redDot: {
-    width: 9,
-    height: 9,
-    borderRadius: 9,
-    backgroundColor: '#E53935',
-    position: 'absolute',
-    right: -3,
-    top: -3,
+  bellWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  redDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 8,
+    backgroundColor: '#F3B21B',
+    position: 'absolute',
+    right: -1,
+    top: -1,
+  },
+
   toggleWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 30,
     padding: 4,
     paddingHorizontal: 6,
     shadowColor: '#000',
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.06,
     shadowRadius: 10,
-    elevation: 2,
+    elevation: 3,
     minWidth: 170,
   },
   toggle: {
@@ -370,22 +394,22 @@ const styles = StyleSheet.create({
   },
   toggleActive: {
     backgroundColor: '#F3B21B',
-    borderRadius: 24,
   },
   toggleText: {
     fontSize: 16,
-    color: '#444',
+    color: '#75706A',
     fontWeight: '700',
   },
   toggleTextActive: { color: '#111' },
+
   banner: {
     width: '100%',
-    height: 170,
+    height: 180,
     resizeMode: 'cover',
     flexDirection: 'row',
     alignItems: 'center',
     padding: 14,
-    marginBottom: 16,
+    marginBottom: 18,
     justifyContent: 'space-between',
   },
   bannerLeft: {
@@ -393,8 +417,8 @@ const styles = StyleSheet.create({
   },
   bannerTitle: {
     color: '#fff',
-    fontSize: 22,
-    fontWeight: '800',
+    fontSize: 12,
+    fontWeight: '500',
     marginBottom: 6,
   },
   bannerSubtitle: {
@@ -411,18 +435,41 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   viewBtnText: { color: '#111', fontWeight: '800', fontSize: 15 },
-  rowBetween: {
+
+  // category pill over hero
+  categoryPill: {
+    position: 'absolute',
+    right: 16,
+    bottom: 18,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 14,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 18,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  h1: { fontSize: 24, fontWeight: '800', color: '#121212' },
-  categoryRow: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+  categoryPillText: {
+    fontSize: 14,
+    color: '#3E372D',
+    fontWeight: '600',
   },
-  categoryRowText: { fontSize: 16, fontWeight: '700', color: '#5F5B55' },
+  categoryArrow: {
+    marginLeft: 6,
+    fontSize: 11,
+    color: '#8C847A',
+  },
+
+  h1: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#121212',
+    marginBottom: 10,
+  },
+
   chipsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -434,12 +481,15 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     marginRight: 10,
     marginBottom: 10,
+    borderWidth: 1,
   },
   chipActive: {
     backgroundColor: '#FBC646',
+    borderColor: '#FBC646',
   },
   chipInactive: {
-    backgroundColor: '#E8E0D5',
+    backgroundColor: '#F6EFE3',
+    borderColor: '#E3D7C6',
   },
   chipText: {
     fontSize: 13.5,
@@ -449,9 +499,11 @@ const styles = StyleSheet.create({
   chipTextActive: {
     color: '#1A1A1A',
   },
+
   listWrap: {
     marginTop: 6,
   },
+
   bigCard: {
     borderRadius: 24,
     overflow: 'hidden',
@@ -462,7 +514,7 @@ const styles = StyleSheet.create({
   },
   bigCardImage: {
     width: '100%',
-    height: 300,
+    height: 260,
     justifyContent: 'flex-end',
     padding: 16,
   },
@@ -554,6 +606,7 @@ const styles = StyleSheet.create({
   },
   bigFavIcon: { fontSize: 16, color: '#C66' },
   bigFavCount: { marginLeft: 6, fontWeight: '800', color: '#111' },
+
   smallCard: {
     flexDirection: 'row',
     backgroundColor: '#fff',
@@ -639,29 +692,48 @@ const styles = StyleSheet.create({
     borderColor: '#E7DCCB',
   },
   favIcon: { fontSize: 18, color: '#2B2B2B' },
+
+  // dropdown
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.25)',
+    backgroundColor: 'transparent',
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
-    paddingTop: 120,
+    paddingTop: 170, // roughly under the category pill
     paddingRight: 22,
+  },
+  dropdownWrapper: {
+    alignItems: 'flex-end',
+  },
+  modalPointer: {
+    width: 14,
+    height: 14,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 3,
+    transform: [{ rotate: '45deg' }],
+    marginRight: 32,
+    marginBottom: -7,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
   modal: {
     width: 220,
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 18,
     paddingVertical: 6,
     shadowColor: '#000',
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.12,
     shadowRadius: 12,
+    elevation: 4,
   },
   modalItem: {
     paddingVertical: 12,
     paddingHorizontal: 14,
   },
   modalItemActive: {
-    backgroundColor: '#FFF8E6',
+    backgroundColor: '#FFF6DE',
   },
   modalRow: {
     flexDirection: 'row',
@@ -670,6 +742,7 @@ const styles = StyleSheet.create({
   },
   modalText: {
     fontSize: 15,
+    color: '#292828',
   },
   modalTextActive: {
     fontWeight: '800',

@@ -1,22 +1,21 @@
-// Demo.js
 import React, { useState } from 'react';
 import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
+  FlatList,
   Image,
   ImageBackground,
-  TouchableOpacity,
-  ScrollView,
-  FlatList,
   Modal,
   Pressable,
+  SafeAreaView,
   StatusBar,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import Icon from 'react-native-vector-icons/AntDesign';
 
-// Replace these requires with correct relative path to your project
 const IMG_G1 = require('../assets/images/g1.png');
 const IMG_G2 = require('../assets/images/g2.png');
 const IMG_AUCTION_BG = require('../assets/images/auctionbg.png');
@@ -43,10 +42,10 @@ const FILTER_CHIPS = [
   'Closed',
 ];
 
-const auctionsMock = [
+const AUCTIONS = [
   {
     id: 'a1',
-    title: 'Rare Nintendo DS Lite Mario Special Edition NFR',
+    title: "Find Your Dream Collectible, You've arrived...",
     location: 'Huston TX',
     currentBid: '$130',
     bg: IMG_AUCTION_BG,
@@ -62,123 +61,173 @@ const auctionsMock = [
     id: 'a3',
     title: "2011 Yu-Gi-Oh! 5D's World Championship 2011 DS...",
     location: 'Huston TX',
-    currentBid: '$75',
+    currentBid: '$50',
     thumb: IMG_G2,
   },
 ];
 
-export default function Demo() {
-  const [mode, setMode] = useState('Buy'); // Buy / Sell
+const Main = () => {
+  const [mode, setMode] = useState('Buy');
   const [activeCategory, setActiveCategory] = useState('Arcades');
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [activeFilter, setActiveFilter] = useState('Featured');
 
-  const renderChip = c => (
+  const renderChip = chip => (
     <TouchableOpacity
-      key={c}
+      key={chip}
       style={[
         styles.chip,
-        activeFilter === c ? styles.chipActive : styles.chipInactive,
+        activeFilter === chip ? styles.chipActive : styles.chipInactive,
       ]}
-      onPress={() => setActiveFilter(c)}
+      onPress={() => setActiveFilter(chip)}
     >
       <Text
-        style={[styles.chipText, activeFilter === c && styles.chipTextActive]}
+        style={[
+          styles.chipText,
+          activeFilter === chip && styles.chipTextActive,
+        ]}
       >
-        {c}
+        {chip}
       </Text>
     </TouchableOpacity>
   );
 
   const renderItem = ({ item, index }) => {
+    // ===== BIG TOP CARD =====
     if (index === 0) {
-      // big banner auction card
       return (
-        <ImageBackground
-          source={item.bg}
-          style={styles.bigCardImage}
-          imageStyle={{ borderRadius: 22 }}
-        >
-          <View style={styles.badgeRow}>
-            <View style={styles.crownDot}>
-              <Text style={{ fontSize: 16 }}>👑</Text>
-            </View>
-            <View style={styles.bidPill}>
-              <Text style={styles.bidLabel}>CURRENT BID</Text>
-              <Text style={styles.bidValue}>{item.currentBid}</Text>
-            </View>
-            <View style={styles.timePill}>
-              <Text style={styles.timeValue}>14</Text>
-              <Text style={styles.timeLabel}>HOURS</Text>
-            </View>
-            <View style={styles.timePill}>
-              <Text style={styles.timeValue}>35</Text>
-              <Text style={styles.timeLabel}>MINS</Text>
-            </View>
-            <View style={styles.timePill}>
-              <Text style={styles.timeValue}>23</Text>
-              <Text style={styles.timeLabel}>SEC</Text>
-            </View>
-          </View>
+        <TouchableOpacity style={styles.bigCard}>
+          <ImageBackground
+            source={item.bg}
+            style={styles.bigCardImage}
+            imageStyle={{ borderRadius: 18 }}
+          >
+            {/* bottom gradient overlay */}
+            <LinearGradient
+              colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.5)']}
+              start={{ x: 0.5, y: 0 }}
+              end={{ x: 0.5, y: 0.8 }}
+              style={styles.bottomGradient}
+            />
 
-          <View style={styles.bigCardFooter}>
-            <Text style={styles.location}>📍 {item.location}</Text>
-            <Text numberOfLines={1} style={styles.bigCardTitle}>
-              {item.title}
-            </Text>
-            <Text numberOfLines={2} style={styles.bigCardSubtitle}>
-              Rare Nintendo DS Lite Mario Special Edition NFR
-            </Text>
-          </View>
+            {/* top crown + bid pill */}
+            <View style={styles.badgeRow}>
+              <View style={styles.crownDot}>
+                <Icon name="crown" size={18} color="#FFF" />
+              </View>
 
-          <View style={styles.bigFav}>
-            <Text style={styles.bigFavIcon}>♡</Text>
-            <Text style={styles.bigFavCount}>13</Text>
-          </View>
-        </ImageBackground>
+              <LinearGradient
+                colors={['#FFD96A', '#F6B13A']}
+                start={{ x: 0, y: 0.5 }}
+                end={{ x: 1, y: 0.5 }}
+                style={styles.bidMainPill}
+              >
+                {/* left: CURRENT BID + amount */}
+                <View style={styles.bidLeft}>
+                  <Text style={styles.bidLabel}>CURRENT BID</Text>
+                  <Text style={styles.bidValue}>{item.currentBid}</Text>
+                </View>
+
+                {/* right: timer pills */}
+                <View style={styles.timerRow}>
+                  <View style={styles.timePill}>
+                    <Text style={styles.timeValue}>14</Text>
+                    <Text style={styles.timeLabel}>HOURS</Text>
+                  </View>
+                  <View style={styles.timePill}>
+                    <Text style={styles.timeValue}>35</Text>
+                    <Text style={styles.timeLabel}>MINS</Text>
+                  </View>
+                  <View style={{ ...styles.timePill, marginRight: 15 }}>
+                    <Text style={styles.timeValue}>23</Text>
+                    <Text style={styles.timeLabel}>SEC</Text>
+                  </View>
+                </View>
+              </LinearGradient>
+              <View style={styles.bigFav}>
+                <Icon name="heart" size={14} color="#FF6A80" style={{ marginRight: 4 }} />
+                <Text style={styles.bigFavCount}>13</Text>
+              </View>
+            </View>
+
+            {/* bottom info (sits on top of gradient) */}
+            <View style={styles.bigCardFooter}>
+              <View style={styles.bigLocationRow}>
+                <View style={styles.locationDot} />
+                <Text style={styles.locationText}>{item.location}</Text>
+              </View>
+
+              <Text numberOfLines={1} style={styles.bigCardTitle}>
+                {item.title}
+              </Text>
+              <Text numberOfLines={2} style={styles.bigCardSubtitle}>
+                Rare Nintendo DS Lite Mario Special Edition NFR Download Station
+                demo console...
+              </Text>
+            </View>
+
+            {/* like pill on top-right */}
+          </ImageBackground>
+        </TouchableOpacity>
       );
     }
 
-    // small list card
+    // ===== SMALL LIST CARDS =====
     return (
       <View style={styles.smallCard}>
-        <Image
-          source={item.thumb}
-          style={styles.smallThumb}
-          resizeMode="cover"
-        />
+        {/* left thumbnail */}
+        <View style={styles.smallThumbWrap}>
+          <Image
+            source={item.thumb}
+            style={styles.smallThumb}
+            resizeMode="cover"
+          />
+
+          {/* yellow time / bid pill (one line) */}
+          <View style={styles.smallPriceBadge}>
+            <Text style={styles.smallPriceText}>
+              04H 44M / MIN. BID {item.currentBid}
+            </Text>
+          </View>
+        </View>
+
+        {/* right body */}
         <View style={styles.smallBody}>
-          <View style={styles.smallTagRow}>
+          <View style={styles.smallHeaderRow}>
             <View style={styles.tag}>
               <Text style={styles.tagText}>Graded Games</Text>
             </View>
+
+            {/* outline heart circle in top-right */}
+            <TouchableOpacity style={styles.smallFavButton}>
+              <Icon name="heart" size={14} color="#FF6A80" />
+            </TouchableOpacity>
           </View>
+
           <Text style={styles.smallTitle} numberOfLines={2}>
             {item.title}
           </Text>
           <Text style={styles.smallSubtitle} numberOfLines={2}>
             Sealed Yu Gi Oh 5D's World Championship 2011...
           </Text>
+
           <View style={styles.smallMetaRow}>
-            <Text style={styles.meta}>📍 {item.location}</Text>
+            <View style={styles.metaLeft}>
+              <View style={styles.locationDot} />
+              <Text style={styles.metaLocationText}>{item.location}</Text>
+            </View>
+
             <View style={styles.metaRight}>
               <View style={styles.metaPill}>
-                <Text style={styles.metaIcon}>♥</Text>
+                <Icon name="heart" size={12} color="#555" style={{ marginRight: 4 }} />
                 <Text style={styles.metaValue}>13</Text>
               </View>
-              <View style={[styles.metaPill, { marginLeft: 8 }]}>
-                <Text style={styles.metaIcon}>👁</Text>
+              <View style={[styles.metaPill, { marginLeft: 12 }]}>
+                <Icon name="eye" size={12} color="#555" style={{ marginRight: 4 }} />
                 <Text style={styles.metaValue}>27</Text>
               </View>
             </View>
           </View>
-        </View>
-        <TouchableOpacity style={styles.favButton}>
-          <Text style={styles.favIcon}>♡</Text>
-        </TouchableOpacity>
-        <View style={styles.smallPriceBadge}>
-          <Text style={styles.smallPriceText}>04H 44M</Text>
-          <Text style={styles.smallMinBid}>MIN. BID {item.currentBid}</Text>
         </View>
       </View>
     );
@@ -187,16 +236,18 @@ export default function Demo() {
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar barStyle="dark-content" />
-      {/* <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#EFEFEF', '#FFCA9A40']} style={styles.safe}> */}
+      <ImageBackground source={require('../assets/images/bg.png')} style={styles.bg}>
+      
       <ScrollView
         style={styles.container}
         contentContainerStyle={{ paddingBottom: 80 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+
+        {/* HEADER (menu, buy/sell, bell) */}
         <View style={styles.headerRow}>
           <TouchableOpacity style={styles.iconButton}>
-            <Text style={styles.iconText}>≡</Text>
+            <Icon name="bars" size={24} color="#000" />
           </TouchableOpacity>
 
           <View style={styles.toggleWrap}>
@@ -229,20 +280,21 @@ export default function Demo() {
           </View>
 
           <TouchableOpacity style={styles.iconButton}>
-            <View>
-              <Text style={styles.iconText}>🔔</Text>
+            <View style={styles.bellWrap}>
+              {/* <Text style={styles.iconText}>🔔</Text> */}
+              <Icon name="bell" size={20} backgroundColor="#3b5998" />
               <View style={styles.redDot} />
             </View>
           </TouchableOpacity>
         </View>
 
-        {/* Banner */}
+        {/* HERO BANNER */}
         <ImageBackground
           source={IMG_HOME_BG}
           style={styles.banner}
-          imageStyle={{ borderRadius: 16 }}
+          imageStyle={{ borderRadius: 24 }}
         >
-          <View style={styles.bannerLeft}>
+          <View style={styles.bannerContent}>
             <Text style={styles.bannerTitle}>Find Your Dream Collectible</Text>
             <Text style={styles.bannerSubtitle}>
               You've arrived at the coolest collectibles auction site!
@@ -253,25 +305,33 @@ export default function Demo() {
           </View>
         </ImageBackground>
 
-        {/* Auctions heading + filters */}
-        <View style={styles.rowBetween}>
+        {/* AUCTIONS HEADER + CATEGORY */}
+        <View style={styles.auctionHeaderRow}>
           <Text style={styles.h1}>Auctions</Text>
+
           <TouchableOpacity
-            style={styles.categoryRow}
+            style={styles.categoryHeaderBtn}
             onPress={() => setShowCategoryModal(true)}
           >
-            <Text style={styles.categoryRowText}>
-              {activeCategory ?? 'Category'} ▾
-            </Text>
+            <Text style={styles.categoryHeaderText}>Category</Text>
+            <Icon name="down" size={10} color="#7B746A" style={{ marginLeft: 4 }} />
           </TouchableOpacity>
         </View>
 
-        <View style={styles.chipsRow}>{FILTER_CHIPS.map(renderChip)}</View>
+        {/* HORIZONTAL FILTER TABS */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.chipsScroll}
+          contentContainerStyle={styles.chipsRow}
+        >
+          {FILTER_CHIPS.map(renderChip)}
+        </ScrollView>
 
-        {/* Auction list */}
+        {/* LIST */}
         <View style={styles.listWrap}>
           <FlatList
-            data={auctionsMock}
+            data={AUCTIONS}
             keyExtractor={item => item.id}
             renderItem={renderItem}
             scrollEnabled={false}
@@ -279,51 +339,64 @@ export default function Demo() {
           />
         </View>
       </ScrollView>
-      {/* </LinearGradient> */}
-      {/* Category modal */}
+</ImageBackground>
+      {/* CATEGORY DROPDOWN */}
       <Modal visible={showCategoryModal} transparent animationType="fade">
         <Pressable
           style={styles.modalOverlay}
           onPress={() => setShowCategoryModal(false)}
         >
-          <View style={styles.modal}>
-            {CATEGORIES.map(c => (
-              <TouchableOpacity
-                key={c}
-                style={[
-                  styles.modalItem,
-                  c === activeCategory && styles.modalItemActive,
-                ]}
-                onPress={() => {
-                  setActiveCategory(c);
-                  setShowCategoryModal(false);
-                }}
-              >
-                <View style={styles.modalRow}>
-                  <Text
-                    style={[
-                      styles.modalText,
-                      c === activeCategory && styles.modalTextActive,
-                    ]}
-                  >
-                    {c}
-                  </Text>
-                  {c === activeCategory && (
-                    <Text style={styles.modalCheck}>✓</Text>
-                  )}
-                </View>
-              </TouchableOpacity>
-            ))}
+          <View style={styles.dropdownWrapper}>
+            <View style={styles.modalPointer} />
+            <View style={styles.modal}>
+              {CATEGORIES.map(category => (
+                <TouchableOpacity
+                  key={category}
+                  style={[
+                    styles.modalItem,
+                    category === activeCategory && styles.modalItemActive,
+                  ]}
+                  onPress={() => {
+                    setActiveCategory(category);
+                    setShowCategoryModal(false);
+                  }}
+                >
+                  <View style={styles.modalRow}>
+                    <Text
+                      style={[
+                        styles.modalText,
+                        category === activeCategory && styles.modalTextActive,
+                      ]}
+                    >
+                      {category}
+                    </Text>
+                    {category === activeCategory && (
+                      <Icon name="check" size={13} color="#000" />
+                    )}
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
         </Pressable>
       </Modal>
     </SafeAreaView>
   );
-}
+};
+
+export default Main;
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#EFEFEF' },
-  container: { paddingHorizontal: 18, paddingTop: 6 },
+  safe: { flex: 1, backgroundColor: '#F5F3F6', paddingTop: 30 },
+  container: { paddingHorizontal: 18, paddingTop: 4 },
+
+  screenLabel: {
+    fontSize: 14,
+    color: '#C1C1C7',
+    marginBottom: 8,
+  },
+
+  /* HEADER */
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -331,39 +404,45 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   iconButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 26,
-    backgroundColor: '#fff',
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#F0E9DD',
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: 8,
     elevation: 2,
   },
-  iconText: { fontSize: 20 },
+  iconText: { fontSize: 25 },
+  bellWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   redDot: {
-    width: 9,
-    height: 9,
-    borderRadius: 9,
-    backgroundColor: '#E53935',
+    width: 8,
+    height: 8,
+    borderRadius: 8,
+    backgroundColor: '#F8B42E',
     position: 'absolute',
-    right: -3,
-    top: -3,
+    right: -1,
+    top: -1,
   },
 
   toggleWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 30,
     padding: 4,
     paddingHorizontal: 6,
     shadowColor: '#000',
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.06,
     shadowRadius: 10,
-    elevation: 2,
+    elevation: 3,
     minWidth: 170,
   },
   toggle: {
@@ -373,85 +452,107 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   toggleActive: {
-    backgroundColor: '#F3B21B',
-    borderRadius: 24,
+    backgroundColor: '#F8B42E',
   },
   toggleText: {
-    fontSize: 16,
-    color: '#444',
-    fontWeight: '700',
+    fontSize: 13,
+    color: '#75706A',
+    fontWeight: '500',
   },
   toggleTextActive: { color: '#111' },
 
+  /* BANNER */
   banner: {
     width: '100%',
-    height: 170,
     resizeMode: 'cover',
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 14,
-    marginBottom: 16,
-    justifyContent: 'space-between',
+    marginBottom: 18,
+    borderRadius: 24,
+    overflow: 'hidden',
   },
-  bannerLeft: {
-    width: '70%',
+  bannerContent: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 25,
+    justifyContent: 'center',
   },
   bannerTitle: {
     color: '#fff',
-    fontSize: 22,
-    fontWeight: '800',
-    marginBottom: 6,
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 4,
   },
   bannerSubtitle: {
     color: '#fff',
-    fontSize: 13,
+    fontSize: 14,
+    maxWidth: '70%',
     marginBottom: 12,
     opacity: 0.95,
   },
   viewBtn: {
-    backgroundColor: '#F3B21B',
-    paddingHorizontal: 14,
+    backgroundColor: '#F8B42E',
+    paddingHorizontal: 18,
     paddingVertical: 9,
-    borderRadius: 20,
+    borderRadius: 24,
     alignSelf: 'flex-start',
   },
-  viewBtnText: { color: '#111', fontWeight: '800', fontSize: 15 },
-  categoryText: { fontWeight: '700', fontSize: 15 },
-  rowBetween: {
+  viewBtnText: { color: '#111', fontWeight: '400', fontSize: 12 },
+
+  /* AUCTIONS HEADER */
+  auctionHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 20,
+    marginTop: 5,
+  },
+  h1: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#000000',
+  },
+  categoryHeaderBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  categoryHeaderText: {
+    fontSize: 14,
+    color: '#7B746A',
+    fontWeight: '400',
+  },
+  categoryHeaderArrow: {
+    fontSize: 11,
+    color: '#7B746A',
+    marginLeft: 4,
+  },
+
+  /* FILTER CHIPS */
+  chipsScroll: {
     marginBottom: 14,
   },
-  h1: { fontSize: 24, fontWeight: '800', color: '#121212' },
-  categoryRow: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  categoryRowText: { fontSize: 16, fontWeight: '700', color: '#5F5B55' },
-
   chipsRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 14,
+    alignItems: 'center',
+    paddingRight: 20,
   },
   chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 9,
-    borderRadius: 18,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
     marginRight: 10,
-    marginBottom: 10,
+    borderWidth: 1,
   },
   chipActive: {
-    backgroundColor: '#FBC646',
+    backgroundColor: '#F8B42E',
+    borderColor: '#F8B42E',
   },
   chipInactive: {
-    backgroundColor: '#E8E0D5',
+    backgroundColor: '#F7EDDC',
+    borderColor: '#F7EDDC',
   },
   chipText: {
-    fontSize: 13.5,
+    fontSize: 11,
     color: '#7A7166',
-    fontWeight: '700',
+    fontWeight: '400',
   },
   chipTextActive: {
     color: '#1A1A1A',
@@ -460,215 +561,318 @@ const styles = StyleSheet.create({
   listWrap: {
     marginTop: 6,
   },
+
+  /* BIG CARD */
+  bigCard: {
+    borderRadius: 24,
+    overflow: 'hidden',
+    // marginBottom: 10,
+  },
   bigCardImage: {
     width: '100%',
-    height: 300,
-    justifyContent: 'flex-end',
-    padding: 16,
+    height: 230,
   },
-  badgeRow: {
+
+  // full bottom gradient
+  bottomGradient: {
     position: 'absolute',
-    top: 16,
-    left: 16,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: '65%', // how tall the fade is – tweak if needed
+    borderRadius: 24,
+  },
+
+  // top badge row
+  badgeRow: {
+    marginHorizontal: 10,
+    // position: 'absolute',
+    top: 12,
+    // left: 16,
+    // right: 16,
     flexDirection: 'row',
     alignItems: 'center',
   },
   crownDot: {
-    width: 42,
-    height: 42,
-    borderRadius: 12,
-    backgroundColor: '#F3B21B',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#F8B42E',
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  bidPill: {
-    backgroundColor: '#F3B21B',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 12,
-    minWidth: 130,
-    justifyContent: 'center',
     marginRight: 6,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  bidLabel: { fontSize: 13, color: '#222', fontWeight: '800' },
-  bidValue: { fontSize: 24, fontWeight: '900', color: '#111' },
-  timePill: {
-    backgroundColor: '#F3B21B',
-    paddingHorizontal: 12,
-    paddingVertical: 9,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 6,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  timeValue: { fontSize: 16, fontWeight: '900', color: '#111' },
-  timeLabel: { fontSize: 11, fontWeight: '700', color: '#6A5B3E' },
-
-  bigCardFooter: {
-    backgroundColor: 'rgba(0,0,0,0.35)',
-    padding: 16,
-    borderRadius: 18,
-    width: '92%',
-    alignSelf: 'center',
-    marginTop: 16,
-  },
-  location: {
-    color: '#fff',
-    marginBottom: 10,
-    fontWeight: '800',
-    fontSize: 18,
-  },
-  bigCardTitle: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: '900',
-    marginBottom: 6,
-  },
-  bigCardSubtitle: { color: '#fff', opacity: 0.95, marginTop: 2, fontSize: 16 },
-  bigFav: {
-    position: 'absolute',
-    top: 18,
-    right: 18,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 18,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
     elevation: 3,
   },
-  bigFavIcon: { fontSize: 16, color: '#C66' },
-  bigFavCount: { marginLeft: 6, fontWeight: '800', color: '#111' },
+  crownIcon: {
+    fontSize: 18,
+  },
 
-  // small card
+  bidMainPill: {
+    flex: 1,
+    marginHorizontal:10,
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingLeft: 7,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  bidLeft: {
+    flexDirection: 'column',
+    // marginRight: 2,
+    marginLeft:8,
+    // marginBottom: 5,
+  },
+  bidLabel: {
+    fontSize: 9,
+    fontWeight: '600',
+    color: '#6b4a00',
+    letterSpacing: 0.5,
+  },
+  bidValue: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#2b1a00',
+  },
+
+  timerRow: {
+    flexDirection: 'row',
+    // marginBottom: 11,
+    alignItems: 'center',
+  },
+  timePill: {
+    minWidth: 40,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.24)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 4,
+  },
+  timeValue: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#2b1a00',
+  },
+  timeLabel: {
+    fontSize: 8,
+    fontWeight: '500',
+    color: '#2b1a00',
+    marginTop: 1,
+  },
+
+  bigCardFooter: {
+    position: 'absolute',
+    left: 16,
+    right: 16,
+    bottom: 16,
+  },
+  bigLocationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  locationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#F8B42E',
+    // marginRight: 6,
+  },
+  locationText: {
+    fontSize: 12,
+    color: '#fff',
+    fontWeight: '500',
+  },
+  bigCardTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 2,
+  },
+  bigCardSubtitle: {
+    fontSize: 12,
+    color: '#f5f5f5',
+  },
+
+  // like pill on top-right
+  bigFav: {
+
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 7,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: 'rgba(236, 236, 236, 0.95)',
+    borderWidth: 1,
+    borderColor: '#ffffffff',
+  },
+  bigFavIcon: {
+    fontSize: 14,
+    marginRight: 4,
+    color: '#FF6A80',
+  },
+  bigFavCount: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#1c1c1cff',
+  },
+
+  /* SMALL CARDS */
   smallCard: {
     flexDirection: 'row',
     backgroundColor: '#fff',
     borderRadius: 22,
-    padding: 12,
-    paddingRight: 18,
+    padding: 8,
+    // marginBottom:10,
+    paddingRight: 10,
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: '#00000080',
     shadowOpacity: 0.05,
     shadowRadius: 10,
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: '#E8E0D2',
+    elevation: 1,
   },
-  smallThumb: {
-    width: 120,
-    height: 120,
-    borderRadius: 12,
+
+  smallThumbWrap: {
+    position: 'relative',
     marginRight: 12,
   },
-  smallBody: { flex: 1, paddingRight: 26 },
-  smallTagRow: { marginBottom: 6 },
-  tag: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#F7E2B5',
+  smallThumb: {
+    width: 140,
+    height: 130,
+    borderRadius: 16,
+  },
+
+  smallPriceBadge: {
+    position: 'absolute',
+    left: 8,
+    bottom: 8,
+    backgroundColor: '#F8B42E',
     paddingHorizontal: 10,
     paddingVertical: 6,
+    borderRadius: 20,
+  },
+  smallPriceText: {
+    fontWeight: '500',
+    fontSize: 8,
+    color: '#111',
+  },
+
+  smallBody: {
+    flex: 1,
+    // paddingRight: 4,
+  },
+  smallHeaderRow: {
+
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 2,
+  },
+  tag: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#fbe9c7ff',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 14,
   },
-  tagText: { fontSize: 13, fontWeight: '800', color: '#1B1B1B' },
+  tagText: { fontSize: 10, fontWeight: '400', color: '#C08619' },
+
+  smallFavButton: {
+    width: 25,
+    height: 25,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#e3e3e3ff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f1f1f1ff',
+  },
+  smallFavIcon: {
+    fontSize: 14,
+    color: '#FF6A80',
+  },
+
   smallTitle: {
-    fontSize: 18,
-    fontWeight: '900',
+    fontSize: 14,
+    fontWeight: '500',
     marginBottom: 4,
     color: '#121212',
   },
-  smallSubtitle: { color: '#7A6F63', marginBottom: 10, fontSize: 14 },
+  smallSubtitle: { color: '#B4A9A0', marginBottom: 8, fontSize: 11 },
+
   smallMetaRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  meta: { color: '#FF8A00', fontWeight: '700' },
+  metaLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  metaLocationText: {
+    fontSize: 11,
+    color: '#8F8680',
+  },
+
   metaRight: { flexDirection: 'row', alignItems: 'center' },
   metaPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1ECE3',
-    borderRadius: 14,
-    paddingHorizontal: 9,
-    paddingVertical: 5,
   },
-  metaIcon: { marginRight: 3, fontSize: 12 },
-  metaValue: { color: '#333', fontWeight: '800' },
-
-  smallPriceBadge: {
-    position: 'absolute',
-    left: 14,
-    bottom: 12,
-    backgroundColor: '#FBC646',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 14,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-  },
-  smallPriceText: { fontWeight: '900', fontSize: 15, color: '#111' },
-  smallMinBid: { fontSize: 11, fontWeight: '700', color: '#3A2E1A' },
+  metaIcon: { marginRight: 4, fontSize: 12, color: '#555' },
+  metaValue: { color: '#555', fontWeight: '500', fontSize: 11 },
 
   favButton: {
-    position: 'absolute',
-    right: 12,
-    top: 12,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#FFF9F0',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    borderWidth: 1,
-    borderColor: '#E7DCCB',
+    // reserved if needed later
   },
-  favIcon: { fontSize: 18, color: '#2B2B2B' },
 
-  // modal
+  /* DROPDOWN */
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.25)',
-    justifyContent: 'flex-start',
+    backgroundColor: 'transparent',
+  },
+  dropdownWrapper: {
+    position: 'absolute',
+    top: 260, // roughly under "Category" header
+    right: 22,
     alignItems: 'flex-end',
-    paddingTop: 120,
-    paddingRight: 22,
+  },
+  modalPointer: {
+    width: 14,
+    height: 14,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 3,
+    transform: [{ rotate: '45deg' }],
+    marginRight: 18,
+    marginBottom: -7,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
   modal: {
-    width: 220,
+    width: 130,
     backgroundColor: '#fff',
     borderRadius: 12,
     paddingVertical: 6,
     shadowColor: '#000',
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.12,
     shadowRadius: 12,
+    elevation: 4,
   },
   modalItem: {
     paddingVertical: 12,
     paddingHorizontal: 14,
   },
   modalItemActive: {
-    backgroundColor: '#FFF8E6',
+    backgroundColor: '#FFF6DE',
+    borderRadius: 20,
   },
   modalRow: {
     flexDirection: 'row',
@@ -676,10 +880,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   modalText: {
-    fontSize: 15,
+    fontSize: 12,
+    color: '#292828',
   },
   modalTextActive: {
-    fontWeight: '800',
+    fontWeight: '500',
   },
-  modalCheck: { fontSize: 16, color: '#F3B21B', fontWeight: '700' },
+  modalCheck: { fontSize: 13, color: '#000000ff', fontWeight: '700' },
 });
